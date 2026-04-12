@@ -3,142 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MDL | Core v1.2</title>
+    <title>MDL | Core v1.3 Professional</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f4f7f9;
+            --bg: #f0f3f5;
             --card: #ffffff;
             --accent: #0052ff;
             --text: #1c1c1e;
             --border: #e5e5ea;
-            --bar-bg: #f2f2f7;
-            --icon-color: #000;
+            --bar-bg: #e5e5ea;
+            --input-bg: #f9f9fb;
         }
 
         .dark-theme {
-            --bg: #0a0a0c;
-            --card: #1c1c1e;
+            --bg: #0d0d0f;
+            --card: #1a1a1c;
             --accent: #3a82ff;
             --text: #ffffff;
             --border: #2c2c2e;
-            --bar-bg: #2c2c2e;
-            --icon-color: #fff;
+            --bar-bg: #3a3a3c;
+            --input-bg: #252527;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: all 0.2s ease; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
         /* AUTH SCREEN */
         #auth-screen {
-            position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+            position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
         }
         .auth-box {
-            width: 100%; max-width: 360px; background: var(--card); padding: 40px 30px; border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border);
+            width: 100%; max-width: 350px; background: var(--card); padding: 40px 25px; border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; border: 1px solid var(--border);
         }
-        .auth-logo { font-weight: 900; font-size: 28px; color: var(--accent); margin-bottom: 30px; }
-        .auth-input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
-        .auth-btn { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .auth-logo { font-weight: 900; font-size: 26px; color: var(--accent); margin-bottom: 25px; letter-spacing: -1px; }
+        .auth-input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); outline: none; text-align: center; }
+        .auth-btn { width: 100%; padding: 16px; background: var(--text); color: var(--card); border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
 
-        /* HEADER & NAV */
+        /* NAV */
         nav { 
             background: var(--card); border-bottom: 1px solid var(--border); 
-            display: flex; flex-wrap: wrap; padding: 10px 20px; align-items: center; gap: 10px;
-            position: sticky; top: 0; z-index: 100;
+            display: flex; padding: 10px 20px; align-items: center; gap: 10px;
+            position: sticky; top: 0; z-index: 100; height: 60px;
         }
         .nav-logo { font-weight: 900; color: var(--accent); font-size: 18px; flex-grow: 1; }
-        .nav-link { font-size: 11px; font-weight: 800; color: #8e8e93; cursor: pointer; padding: 8px 12px; border-radius: 10px; text-transform: uppercase; }
+        .nav-link { font-size: 10px; font-weight: 800; color: #8e8e93; cursor: pointer; padding: 8px 12px; border-radius: 10px; text-transform: uppercase; }
         .nav-link.active { color: var(--accent); background: rgba(0, 82, 255, 0.1); }
         
-        .theme-toggle {
-            background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px;
-        }
+        .theme-toggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px; }
 
-        /* MAIN CONTENT */
-        #main-app { display: none; flex-direction: column; width: 100%; }
-        .tab-content { display: none; padding: 20px; gap: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        /* MAIN */
+        #main-app { display: none; width: 100%; }
+        .tab-content { display: none; padding: 15px; gap: 15px; max-width: 1200px; margin: 0 auto; width: 100%; }
         .tab-content.active { display: flex; flex-direction: column; }
 
         @media (min-width: 768px) {
             .tab-content.active { display: grid; grid-template-columns: 320px 1fr; }
         }
 
-        /* SIDEBAR / INPUTS */
-        .sidebar { background: var(--card); border-radius: 20px; padding: 25px; border: 1px solid var(--border); height: fit-content; }
+        /* SIDEBAR */
+        .sidebar { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); height: fit-content; }
         .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 9px; font-weight: 800; color: #8e8e93; text-transform: uppercase; margin-bottom: 5px; }
-        input[type="number"] { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; outline: none; }
-        .execute-btn { width: 100%; padding: 15px; border-radius: 12px; background: var(--text); color: var(--card); font-weight: 900; border: none; cursor: pointer; margin-top: 10px; }
+        label { display: block; font-size: 9px; font-weight: 800; color: #8e8e93; text-transform: uppercase; margin-bottom: 4px; }
+        input[type="number"] { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-weight: 700; outline: none; }
+        .execute-btn { width: 100%; padding: 16px; border-radius: 14px; background: var(--accent); color: #fff; font-weight: 900; border: none; cursor: pointer; margin-top: 5px; text-transform: uppercase; }
 
         /* RESULTS */
         .results-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .results-grid { grid-template-columns: 1fr 1fr; } }
         
-        .res-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
-        .res-card h3 { font-size: 10px; color: #8e8e93; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .res-card { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid var(--border); }
+        .res-card h3 { font-size: 10px; color: #8e8e93; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        
         .metric { margin-bottom: 12px; }
-        .m-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 5px; }
-        .m-bar { height: 6px; background: var(--bar-bg); border-radius: 5px; overflow: hidden; }
-        .m-fill { height: 100%; width: 0%; background: var(--accent); transition: 1s ease-out; }
+        .m-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+        .m-bar { height: 8px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; }
+        .m-fill { height: 100%; width: 0%; background: var(--accent); transition: 1.2s cubic-bezier(0.1, 1, 0.1, 1); }
+        
+        .extra-stats { grid-column: 1/-1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+        .stat-box { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 18px; text-align: center; }
+        .stat-val { display: block; font-size: 20px; font-weight: 900; color: var(--accent); }
+        .stat-lbl { font-size: 9px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
 
         /* TOOLS */
-        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; grid-column: 1 / -1; }
-        @media (min-width: 768px) { .tools-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .conv-card { background: var(--card); border-radius: 20px; padding: 25px; border: 1px solid var(--border); }
-        .conv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; width: 100%; grid-column: 1 / -1; }
+        .conv-card { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid var(--border); }
+        .conv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <div class="auth-logo">MDL CORE</div>
-            <input type="text" id="user" class="auth-input" placeholder="User ID" autocomplete="off">
-            <input type="password" id="pass" class="auth-input" placeholder="Password">
-            <button class="auth-btn" onclick="login()">Access System</button>
+            <div class="auth-logo">MDL SYSTEM</div>
+            <input type="text" id="user" class="auth-input" placeholder="LOGIN" autocomplete="off">
+            <input type="password" id="pass" class="auth-input" placeholder="PASSWORD">
+            <button class="auth-btn" onclick="login()">Enter Core</button>
         </div>
     </div>
 
     <div id="main-app">
         <nav>
-            <div class="nav-logo">MDL v1.2</div>
-            <div class="nav-link active" onclick="switchTab('compute', event)">Анализ</div>
-            <div class="nav-link" onclick="switchTab('tools', event)">Конвертеры</div>
-            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
-                <svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:black"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <svg id="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            <div class="nav-logo">MDL v1.3</div>
+            <div class="nav-link active" onclick="switchTab('compute', event)">01 Анализ</div>
+            <div class="nav-link" onclick="switchTab('tools', event)">02 Инструменты</div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <svg id="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg id="moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             </button>
         </nav>
 
         <div id="compute-tab" class="tab-content active">
             <div class="sidebar">
-                <div class="input-group"><label>CAPE</label><input type="number" id="cape" value="0"></div>
-                <div class="input-group"><label>LI</label><input type="number" id="li" value="0"></div>
+                <div class="input-group"><label>Температура (°C)</label><input type="number" id="temp" value="20"></div>
+                <div class="input-group"><label>Точка росы (Td)</label><input type="number" id="dew" value="10"></div>
+                <div class="input-group"><label>Ветер (м/с)</label><input type="number" id="wind_spd" value="5"></div>
+                <hr style="margin: 15px 0; opacity: 0.1;">
+                <div class="input-group"><label>CAPE (J/kg)</label><input type="number" id="cape" value="0"></div>
+                <div class="input-group"><label>LI Index</label><input type="number" id="li" value="0"></div>
                 <div class="input-group"><label>Shear 0-6km</label><input type="number" id="shear" value="0"></div>
-                <div class="input-group"><label>SRH 0-3km</label><input type="number" id="srh" value="0"></div>
-                <div class="input-group"><label>RH %</label><input type="number" id="rh" value="0"></div>
-                <div class="input-group"><label>DPD</label><input type="number" id="dpd" value="0"></div>
-                <div class="input-group"><label>Vorticity</label><input type="number" id="vort" value="0"></div>
-                <button class="execute-btn" onclick="runMDL()">Рассчитать</button>
+                <div class="input-group"><label>RH % (Влажность)</label><input type="number" id="rh" value="80"></div>
+                <button class="execute-btn" onclick="runMDL()">Compute MDL</button>
             </div>
 
             <div class="results-grid">
                 <div class="res-card">
-                    <h3>Облачность и осадки</h3>
-                    <div class="metric"><div class="m-info"><span>Общие осадки</span><span id="p1">0%</span></div><div class="m-bar"><div id="b1" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Ливневые осадки</span><span id="p2">0%</span></div><div class="m-bar"><div id="b2" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Кучевая (Cu)</span><span id="p3">0%</span></div><div class="m-bar"><div id="b3" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Слоистая (St)</span><span id="p4">0%</span></div><div class="m-bar"><div id="b4" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Туман</span><span id="p5">0%</span></div><div class="m-bar"><div id="b5" class="m-fill"></div></div></div>
+                    <h3>Конвекция и шторм</h3>
+                    <div class="metric"><div class="m-info"><span>Гроза</span><span id="p6">0%</span></div><div class="m-bar"><div id="b6" class="m-fill"></div></div></div>
+                    <div class="metric"><div class="m-info"><span>Суперячейка</span><span id="p7">0%</span></div><div class="m-bar"><div id="b7" class="m-fill"></div></div></div>
+                    <div class="metric"><div class="m-info"><span>Торнадо</span><span id="p9">0%</span></div><div class="m-bar"><div id="b9" class="m-fill"></div></div></div>
                 </div>
                 <div class="res-card">
-                    <h3>Штормовые явления</h3>
-                    <div class="metric"><div class="m-info"><span>Грозы</span><span id="p6">0%</span></div><div class="m-bar"><div id="b6" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Суперячейки</span><span id="p7">0%</span></div><div class="m-bar"><div id="b7" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Шквал</span><span id="p8">0%</span></div><div class="m-bar"><div id="b8" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Торнадо</span><span id="p9">0%</span></div><div class="m-bar"><div id="b9" class="m-fill"></div></div></div>
+                    <h3>Облачность и осадки</h3>
+                    <div class="metric"><div class="m-info"><span>Слоистая (St)</span><span id="p4">0%</span></div><div class="m-bar"><div id="b4" class="m-fill"></div></div></div>
+                    <div class="metric"><div class="m-info"><span>Кучевая (Cu)</span><span id="p3">0%</span></div><div class="m-bar"><div id="b3" class="m-fill"></div></div></div>
+                    <div class="metric"><div class="m-info"><span>Ливень</span><span id="p2">0%</span></div><div class="m-bar"><div id="b2" class="m-fill"></div></div></div>
+                </div>
+                <div class="extra-stats">
+                    <div class="stat-box"><span class="stat-val" id="val-lcl">--</span><span class="stat-lbl">Нижняя кромка (м)</span></div>
+                    <div class="stat-box"><span class="stat-val" id="val-chill">--</span><span class="stat-lbl">Ощущается как (°C)</span></div>
                 </div>
             </div>
         </div>
@@ -151,26 +155,19 @@
                         <div><label>гПа</label><input type="number" id="hpa" oninput="convP('hpa')"></div>
                         <div><label>мм рт.ст.</label><input type="number" id="mm" oninput="convP('mm')"></div>
                     </div>
-                    <div class="conv-row">
-                        <div><label>inHg</label><input type="number" id="inhg" oninput="convP('in')"></div>
-                    </div>
                 </div>
                 <div class="conv-card">
                     <h3>Ветер</h3>
                     <div class="conv-row">
                         <div><label>м/с</label><input type="number" id="ms" oninput="convW('ms')"></div>
-                        <div><label>км/ч</label><input type="number" id="kmh" oninput="convW('kmh')"></div>
-                    </div>
-                    <div class="conv-row">
-                        <div><label>узлы</label><input type="number" id="kt" oninput="convW('kt')"></div>
-                        <div><label>mph</label><input type="number" id="mph" oninput="convW('mph')"></div>
+                        <div><label>Узлы</label><input type="number" id="kt" oninput="convW('kt')"></div>
                     </div>
                 </div>
                 <div class="conv-card">
                     <h3>Температура</h3>
                     <div class="conv-row">
-                        <div><label>Celsius</label><input type="number" id="tc" oninput="convT('c')"></div>
-                        <div><label>Fahrenheit</label><input type="number" id="tf" oninput="convT('f')"></div>
+                        <div><label>°C</label><input type="number" id="tc" oninput="convT('c')"></div>
+                        <div><label>°F</label><input type="number" id="tf" oninput="convT('f')"></div>
                     </div>
                 </div>
             </div>
@@ -178,23 +175,19 @@
     </div>
 
     <script>
-        function checkDevice() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            console.log("Device Type: " + (isMobile ? "Mobile" : "Desktop"));
-            if(isMobile) document.body.classList.add('mobile-optimized');
-        }
+        // Детектор типа устройства
+        const deviceType = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+        console.log(`MDL Core Engine: Initialized on ${deviceType}`);
 
         function login() {
             if(document.getElementById('user').value === 'root' && document.getElementById('pass').value === 'MDL') {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'flex';
-                checkDevice();
             }
         }
 
         function toggleTheme() {
-            const body = document.body;
-            const isDark = body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.toggle('dark-theme');
             document.getElementById('sun-icon').style.display = isDark ? 'none' : 'block';
             document.getElementById('moon-icon').style.display = isDark ? 'block' : 'none';
         }
@@ -208,49 +201,55 @@
 
         // Конвертеры
         function convP(t) {
-            const h = document.getElementById('hpa'), m = document.getElementById('mm'), i = document.getElementById('inhg');
-            if(t==='hpa') { m.value=(h.value*0.75).toFixed(1); i.value=(h.value*0.0295).toFixed(2); }
-            if(t==='mm') { h.value=(m.value/0.75).toFixed(1); i.value=(m.value*0.039).toFixed(2); }
+            const h = document.getElementById('hpa'), m = document.getElementById('mm');
+            if(t==='hpa') m.value=(h.value*0.75006).toFixed(1); else h.value=(m.value/0.75006).toFixed(1);
         }
         function convW(t) {
-            const ms = document.getElementById('ms'), km = document.getElementById('kmh'), kt = document.getElementById('kt'), mph = document.getElementById('mph');
-            if(t==='ms') { km.value=(ms.value*3.6).toFixed(1); kt.value=(ms.value*1.94).toFixed(1); mph.value=(ms.value*2.23).toFixed(1); }
+            const ms = document.getElementById('ms'), kt = document.getElementById('kt');
+            if(t==='ms') kt.value=(ms.value*1.943).toFixed(1); else ms.value=(kt.value/1.943).toFixed(1);
         }
         function convT(t) {
             const c = document.getElementById('tc'), f = document.getElementById('tf');
-            if(t==='c') f.value = (c.value * 9/5 + 32).toFixed(1);
-            else c.value = ((f.value - 32) * 5/9).toFixed(1);
+            if(t==='c') f.value = (c.value * 1.8 + 32).toFixed(1); else c.value = ((f.value - 32) / 1.8).toFixed(1);
         }
 
-        // MDL Модель
+        // MDL v1.3 Logic
         function sat(v, k=0.5, s=5) { return v <= 0 ? 0 : (1/(1+Math.exp(-k*(v-s))))*100; }
 
         function runMDL() {
+            const t = parseFloat(document.getElementById('temp').value) || 0;
+            const td = parseFloat(document.getElementById('dew').value) || 0;
+            const v = parseFloat(document.getElementById('wind_spd').value) || 0;
             const cape = parseFloat(document.getElementById('cape').value) || 0;
             const li = parseFloat(document.getElementById('li').value) || 0;
-            const shear = parseFloat(document.getElementById('shear').value) || 0;
-            const srh = parseFloat(document.getElementById('srh').value) || 0;
             const rh = parseFloat(document.getElementById('rh').value) || 0;
-            const dpd = parseFloat(document.getElementById('dpd').value) || 0;
-            const vort = parseFloat(document.getElementById('vort').value) || 0;
+            const shear = parseFloat(document.getElementById('shear').value) || 0;
 
-            const res = [
-                (rh > 70 ? (rh-70)*3.3 : 0), // Осадки
-                (cape > 500 && rh > 60 ? sat(cape/500 + rh/20, 0.5, 5) : 0), // Ливни
-                sat(cape/300 + rh/15, 0.4, 6), // Кучевая
-                (rh > 85 && li > -1 ? sat(rh-80, 0.6, 5) : 0), // Слоистая
-                (rh > 93 && dpd < 1 ? sat(95-rh, 0.8, 2) : 0), // Туман
-                (cape > 300 ? sat(cape/400 + Math.abs(li), 0.6, 6) : 0), // Грозы
-                (cape > 1000 && shear > 15 ? sat((cape/1000)*(shear/10), 0.5, 4) : 0), // Суперячейки
-                (shear > 12 ? sat(shear + cape/1000, 0.4, 15) : 0), // Шквал
-                (cape > 1500 && srh > 150 ? sat((cape/1500)*(srh/100), 0.7, 5) : 0) // Торнадо
-            ];
+            // 1. Физические расчеты
+            const lcl = 122 * (t - td);
+            document.getElementById('val-lcl').innerText = Math.max(0, lcl).toFixed(0);
 
-            res.forEach((v, i) => {
-                const val = Math.min(100, Math.max(0, v));
-                document.getElementById('p'+(i+1)).innerText = val.toFixed(1) + '%';
-                document.getElementById('b'+(i+1)).style.width = val + '%';
-            });
+            // Wind Chill (при t < 10 C)
+            const chill = 13.12 + 0.6215*t - 11.37*Math.pow(v*3.6, 0.16) + 0.3965*t*Math.pow(v*3.6, 0.16);
+            document.getElementById('val-chill').innerText = (t < 10 ? chill : t).toFixed(1);
+
+            // 2. Вероятности (MDL v1.3)
+            const cMult = cape > 50 ? Math.min(1, cape / 500) : 0; // Множитель конвекции
+
+            const results = {
+                "2": sat(cape/500 + rh/25, 0.5, 6) * cMult, // Ливень
+                "3": (sat(cape/200 + rh/20, 0.4, 7) * (cape > 20 ? 1 : 0.05)), // Cu (теперь реалистично)
+                "4": (rh > 85 ? sat(rh - 85, 0.8, 4) : 0), // St
+                "6": (cape > 400 ? sat(cape/500 + Math.abs(li), 0.6, 6) : 0), // Гроза
+                "7": (cape > 1000 && shear > 15 ? sat((cape/1000)*(shear/10), 0.5, 4) : 0), // Суперячейка
+                "9": (cape > 1500 && shear > 20 ? sat(cape/2000 * shear/15, 0.7, 5) : 0) // Торнадо
+            };
+
+            for(let key in results) {
+                let val = Math.min(100, Math.max(0, results[key]));
+                document.getElementById('p'+key).innerText = val.toFixed(1) + '%';
+                document.getElementById('b'+key).style.width = val + '%';
+            }
         }
     </script>
 </body>
