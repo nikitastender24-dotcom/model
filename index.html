@@ -1,31 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <style id="blocker">
-        html { display: none !important; background: #000 !important; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MDL | Core v1.3 PRO</title>
 
     <script>
         (function() {
             if (sessionStorage.getItem('auth_key') !== 'GRANTED_v13') {
-                // Если сессии нет, немедленно перенаправляем и убиваем поток отрисовки
-                window.location.replace('auth.html');
-                document.write('');
+                // Если ключа нет — мгновенный увод на авторизацию
+                window.location.href = 'auth.html';
+                // Остановка парсинга, чтобы код ниже не был виден
                 window.stop();
-            } else {
-                // Если авторизован, убираем блокировку
-                document.documentElement.style.display = 'block';
-                document.addEventListener("DOMContentLoaded", function() {
-                    const styleTag = document.getElementById('blocker');
-                    if (styleTag) styleTag.remove();
-                });
+                document.write('<style>html{display:none !important;}</style>');
             }
         })();
     </script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MDL | Core v1.3 PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -92,24 +83,30 @@
         
         label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; margin-bottom: 6px; }
         input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; outline: none; }
+        input:focus { border-color: var(--accent); }
         
         .execute-btn { 
             width: 100%; padding: 18px; border-radius: 14px; background: var(--accent-grad); color: #fff; 
             font-weight: 900; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase; 
             box-shadow: 0 10px 20px rgba(0, 82, 255, 0.3), inset 0 1px 1px rgba(255,255,255,0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: 0.2s;
         }
+        .execute-btn:active { transform: scale(0.98); }
 
-        .converter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
+        .results-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1100px) { .results-grid { grid-template-columns: 1fr 1fr; } }
+        
         .metric { margin-bottom: 16px; }
         .m-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
-        .m-bar { height: 10px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; }
+        .m-bar { height: 10px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         .m-fill { height: 100%; width: 0%; background: var(--accent-grad); border-radius: 10px; transition: 1.2s cubic-bezier(0.2, 1, 0.2, 1); }
 
         .extra-panel { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .stat-val { display: block; font-size: 26px; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
         .stat-label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
+        
+        .converter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     </style>
 </head>
 <body>
@@ -118,7 +115,7 @@
         <div class="nav-logo">MDL CORE v1.3</div>
         <div class="nav-tools">
             <div class="exit-btn" onclick="exit()">Выход</div>
-            <button class="icon-btn" onclick="toggleTheme()">
+            <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">
                 <svg id="theme-icon" viewBox="0 0 24 24">
                     <path d="M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98,1.37-2.58,2.26-4.4,2.26 c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"/>
                 </svg>
