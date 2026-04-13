@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script>
+        if (localStorage.getItem('auth_key') !== 'GRANTED_v13') {
+            window.location.replace('auth.html');
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MDL | Core v1.3 PRO</title>
@@ -27,30 +32,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.3s; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-        /* ВХОД */
-        #auth-screen {
-            position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999;
-        }
-        .auth-box {
-            width: 90%; max-width: 360px; background: var(--card); padding: 40px; border-radius: 28px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border);
-        }
-        .auth-logo { font-weight: 900; font-size: 32px; color: var(--accent); margin-bottom: 30px; letter-spacing: -1.5px; }
-        .auth-input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; text-align: center; }
-        .auth-btn { width: 100%; padding: 16px; background: var(--text); color: var(--card); border: none; border-radius: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-
-        /* НАВИГАЦИЯ */
         nav { 
             background: var(--card); border-bottom: 1px solid var(--border); 
-            display: flex; padding: 0 20px; align-items: center; height: 70px; sticky; top: 0; z-index: 100;
+            display: flex; padding: 0 20px; align-items: center; height: 70px; position: sticky; top: 0; z-index: 100;
         }
         .nav-logo { font-weight: 900; color: var(--accent); font-size: 20px; flex-grow: 1; }
         .nav-link { font-size: 11px; font-weight: 800; color: #8e8e93; cursor: pointer; padding: 10px 15px; border-radius: 10px; text-transform: uppercase; }
         .nav-link.active { color: var(--accent); background: rgba(0, 82, 255, 0.08); }
-        .theme-toggle { background: none; border: none; cursor: pointer; margin-left: 10px; padding: 5px; display: flex; align-items: center; }
+        .theme-toggle { background: none; border: none; cursor: pointer; margin-left: 10px; padding: 5px; }
 
-        /* КОНТЕНТ */
-        #main-app { display: none; width: 100%; }
         .tab-content { display: none; padding: 20px; gap: 20px; max-width: 1300px; margin: 0 auto; width: 100%; }
         .tab-content.active { display: flex; flex-direction: column; }
 
@@ -58,14 +48,12 @@
             .tab-content.active { display: grid; grid-template-columns: 350px 1fr; }
         }
 
-        /* САЙДБАР */
-        .sidebar { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); height: fit-content; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .sidebar { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); height: fit-content; }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; margin-bottom: 6px; }
         input[type="number"] { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; outline: none; }
-        .execute-btn { width: 100%; padding: 18px; border-radius: 14px; background: var(--accent); color: #fff; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .execute-btn { width: 100%; padding: 18px; border-radius: 14px; background: var(--accent); color: #fff; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; }
 
-        /* РЕЗУЛЬТАТЫ */
         .results-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 1100px) { .results-grid { grid-template-columns: 1fr 1fr; } }
         
@@ -77,151 +65,69 @@
         .m-bar { height: 7px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; }
         .m-fill { height: 100%; width: 0%; background: var(--accent); transition: 1s cubic-bezier(0.2, 1, 0.2, 1); }
 
-        /* ДОП ПАНЕЛЬ */
         .extra-panel { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; }
         .stat-val { display: block; font-size: 24px; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
         .stat-label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
-
-        /* КОНВЕРТЕРЫ */
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; grid-column: 1 / -1; }
-        .conv-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); }
-        .conv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <div class="auth-box">
-            <div class="auth-logo">MDL CORE</div>
-            <input type="text" id="user" class="auth-input" placeholder="User ID" autocomplete="off">
-            <input type="password" id="pass" class="auth-input" placeholder="Password">
-            <button class="auth-btn" onclick="login()">Access Logic</button>
-        </div>
-    </div>
+    <nav>
+        <div class="nav-logo">MDL v1.3</div>
+        <div class="nav-link active">Анализ</div>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    </nav>
 
-    <div id="main-app">
-        <nav>
-            <div class="nav-logo">MDL v1.3</div>
-            <div class="nav-link active" onclick="switchTab('compute', event)">Анализ</div>
-            <div class="nav-link" onclick="switchTab('tools', event)">Конвертеры</div>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <svg id="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            </button>
-        </nav>
-
-        <div id="compute-tab" class="tab-content active">
-            <div class="sidebar">
-                <div class="input-group"><label>Темп. воздуха (°C)</label><input type="number" id="temp" value="15"></div>
-                <div class="input-group"><label>Точка росы (Td)</label><input type="number" id="dew" value="10"></div>
-                <div class="input-group"><label>Ветер (м/с)</label><input type="number" id="wind" value="5"></div>
-                <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
-                <div class="input-group"><label>CAPE (J/kg)</label><input type="number" id="cape" value="0"></div>
-                <div class="input-group"><label>LI Index</label><input type="number" id="li" value="0"></div>
-                <div class="input-group"><label>RH % (Влажность)</label><input type="number" id="rh" value="0"></div>
-                <div class="input-group"><label>DPD (Дефицит)</label><input type="number" id="dpd" value="0"></div>
-                <div class="input-group"><label>Shear 0-6km</label><input type="number" id="shear" value="0"></div>
-                <div class="input-group"><label>SRH 0-3km</label><input type="number" id="srh" value="0"></div>
-                <button class="execute-btn" onclick="runMDL()">Calculate MDL</button>
-            </div>
-
-            <div class="results-grid">
-                <div class="extra-panel">
-                    <div class="stat-card"><span class="stat-val" id="lcl-val">0</span><span class="stat-label">Нижняя кромка (м)</span></div>
-                    <div class="stat-card"><span class="stat-val" id="chill-val">0</span><span class="stat-label">Ощущается как (°C)</span></div>
-                </div>
-
-                <div class="res-card">
-                    <h3>Осадки и Облака</h3>
-                    <div class="metric"><div class="m-info"><span>Общие осадки</span><span id="p1">0%</span></div><div class="m-bar"><div id="b1" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Ливневые осадки</span><span id="p2">0%</span></div><div class="m-bar"><div id="b2" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Кучевая (Cu)</span><span id="p3">0%</span></div><div class="m-bar"><div id="b3" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Слоистая (St)</span><span id="p4">0%</span></div><div class="m-bar"><div id="b4" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Туман</span><span id="p5">0%</span></div><div class="m-bar"><div id="b5" class="m-fill"></div></div></div>
-                </div>
-
-                <div class="res-card">
-                    <h3>Опасные явления</h3>
-                    <div class="metric"><div class="m-info"><span>Грозы</span><span id="p6">0%</span></div><div class="m-bar"><div id="b6" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Суперячейки</span><span id="p7">0%</span></div><div class="m-bar"><div id="b7" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Шквал</span><span id="p8">0%</span></div><div class="m-bar"><div id="b8" class="m-fill"></div></div></div>
-                    <div class="metric"><div class="m-info"><span>Торнадо-индекс</span><span id="p9">0%</span></div><div class="m-bar"><div id="b9" class="m-fill"></div></div></div>
-                </div>
-            </div>
+    <div id="compute-tab" class="tab-content active">
+        <div class="sidebar">
+            <div class="input-group"><label>Темп. воздуха (°C)</label><input type="number" id="temp" value="15"></div>
+            <div class="input-group"><label>Точка росы (Td)</label><input type="number" id="dew" value="10"></div>
+            <div class="input-group"><label>Ветер (м/с)</label><input type="number" id="wind" value="5"></div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+            <div class="input-group"><label>CAPE (J/kg)</label><input type="number" id="cape" value="0"></div>
+            <div class="input-group"><label>LI Index</label><input type="number" id="li" value="0"></div>
+            <div class="input-group"><label>RH % (Влажность)</label><input type="number" id="rh" value="0"></div>
+            <div class="input-group"><label>DPD (Дефицит)</label><input type="number" id="dpd" value="0"></div>
+            <div class="input-group"><label>Shear 0-6km</label><input type="number" id="shear" value="0"></div>
+            <div class="input-group"><label>SRH 0-3km</label><input type="number" id="srh" value="0"></div>
+            <button class="execute-btn" onclick="runMDL()">Calculate MDL</button>
         </div>
 
-        <div id="tools-tab" class="tab-content">
-            <div class="tools-grid">
-                <div class="conv-card">
-                    <h3>Давление (P)</h3>
-                    <div class="conv-row">
-                        <div><label>гПа (hPa)</label><input type="number" id="hpa" oninput="convP('hpa')"></div>
-                        <div><label>мм рт.ст.</label><input type="number" id="mm" oninput="convP('mm')"></div>
-                    </div>
-                </div>
-                <div class="conv-card">
-                    <h3>Ветер (V)</h3>
-                    <div class="conv-row">
-                        <div><label>м/с</label><input type="number" id="ms" oninput="convW('ms')"></div>
-                        <div><label>Узлы (kt)</label><input type="number" id="kt" oninput="convW('kt')"></div>
-                    </div>
-                </div>
-                <div class="conv-card">
-                    <h3>Температура (T)</h3>
-                    <div class="conv-row">
-                        <div><label>Celsius (°C)</label><input type="number" id="tc" oninput="convT('c')"></div>
-                        <div><label>Fahrenheit (°F)</label><input type="number" id="tf" oninput="convT('f')"></div>
-                    </div>
-                </div>
+        <div class="results-grid">
+            <div class="extra-panel">
+                <div class="stat-card"><span class="stat-val" id="lcl-val">0</span><span class="stat-label">Нижняя кромка (м)</span></div>
+                <div class="stat-card"><span class="stat-val" id="chill-val">0</span><span class="stat-label">Ощущается как (°C)</span></div>
+            </div>
+
+            <div class="res-card">
+                <h3>Осадки и Облака</h3>
+                <div class="metric"><div class="m-info"><span>Общие осадки</span><span id="p1">0%</span></div><div class="m-bar"><div id="b1" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Ливневые осадки</span><span id="p2">0%</span></div><div class="m-bar"><div id="b2" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Кучевая (Cu)</span><span id="p3">0%</span></div><div class="m-bar"><div id="b3" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Слоистая (St)</span><span id="p4">0%</span></div><div class="m-bar"><div id="b4" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Туман</span><span id="p5">0%</span></div><div class="m-bar"><div id="b5" class="m-fill"></div></div></div>
+            </div>
+
+            <div class="res-card">
+                <h3>Опасные явления</h3>
+                <div class="metric"><div class="m-info"><span>Грозы</span><span id="p6">0%</span></div><div class="m-bar"><div id="b6" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Суперячейки</span><span id="p7">0%</span></div><div class="m-bar"><div id="b7" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Шквал</span><span id="p8">0%</span></div><div class="m-bar"><div id="b8" class="m-fill"></div></div></div>
+                <div class="metric"><div class="m-info"><span>Торнадо-индекс</span><span id="p9">0%</span></div><div class="m-bar"><div id="b9" class="m-fill"></div></div></div>
             </div>
         </div>
     </div>
 
     <script>
-        function login() {
-            if(document.getElementById('user').value === 'root' && document.getElementById('pass').value === 'MDL') {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-                console.log("Device Check: " + (/iPhone|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop"));
-            }
-        }
+        function toggleTheme() { document.body.classList.toggle('dark-theme'); }
 
-        function toggleTheme() {
-            const isDark = document.body.classList.toggle('dark-theme');
-            document.getElementById('sun-icon').style.display = isDark ? 'none' : 'block';
-            document.getElementById('moon-icon').style.display = isDark ? 'block' : 'none';
-        }
-
-        function switchTab(t, e) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(t + '-tab').classList.add('active');
-            e.target.classList.add('active');
-        }
-
-        // Конвертеры
-        function convP(t) {
-            const h = document.getElementById('hpa'), m = document.getElementById('mm');
-            if(t==='hpa') m.value=(h.value*0.75006).toFixed(1); else h.value=(m.value/0.75006).toFixed(1);
-        }
-        function convW(t) {
-            const ms = document.getElementById('ms'), kt = document.getElementById('kt');
-            if(t==='ms') kt.value=(ms.value*1.943).toFixed(1); else ms.value=(kt.value/1.943).toFixed(1);
-        }
-        function convT(t) {
-            const c = document.getElementById('tc'), f = document.getElementById('tf');
-            if(t==='c') f.value=(c.value*1.8+32).toFixed(1); else c.value=((f.value-32)/1.8).toFixed(1);
-        }
-
-        // MDL v1.3 LOGIC
         function sat(v, k=0.5, s=5) { return v <= 0 ? 0 : (1/(1+Math.exp(-k*(v-s))))*100; }
 
         function runMDL() {
             const temp = parseFloat(document.getElementById('temp').value) || 0;
             const dew = parseFloat(document.getElementById('dew').value) || 0;
             const wind = parseFloat(document.getElementById('wind').value) || 0;
-            
             const cape = parseFloat(document.getElementById('cape').value) || 0;
             const li = parseFloat(document.getElementById('li').value) || 0;
             const rh = parseFloat(document.getElementById('rh').value) || 0;
@@ -229,34 +135,31 @@
             const shear = parseFloat(document.getElementById('shear').value) || 0;
             const srh = parseFloat(document.getElementById('srh').value) || 0;
 
-            // Доп. формулы
-            const lcl = 122 * (temp - dew);
-            document.getElementById('lcl-val').innerText = Math.max(0, lcl).toFixed(0);
-            
-            const windChill = 13.12 + 0.6215*temp - 11.37*Math.pow(wind*3.6, 0.16) + 0.3965*temp*Math.pow(wind*3.6, 0.16);
-            document.getElementById('chill-val').innerText = (temp <= 10 ? windChill : temp).toFixed(1);
+            const lcl = Math.max(0, 122 * (temp - dew));
+            const chill = (temp <= 10) ? (13.12 + 0.6215*temp - 11.37*Math.pow(wind*3.6, 0.16) + 0.3965*temp*Math.pow(wind*3.6, 0.16)) : temp;
 
-            // Твоя исправленная логика
             const convMult = cape > 50 ? Math.min(1, cape / 400) : 0;
-
+            
             const res = [
-                (rh > 80 ? (rh - 80) * 4.5 + (dpd < 1 ? 10 : 0) : 0), // 1. Общие
-                (cape > 400 ? sat(cape/500 + rh/25, 0.5, 6) * convMult : 0), // 2. Ливневые
-                (sat(cape/200 + rh/20, 0.4, 7) * (cape > 20 ? 1 : 0.1)), // 3. Кучевые
-                (rh > 85 ? sat(rh - 85, 0.8, 4) : 0), // 4. Слоистые
-                (rh > 95 && dpd < 0.5 ? sat(rh - 90, 1.2, 5) : 0), // 5. Туман
-                (cape > 500 ? sat(cape/600 + Math.abs(li), 0.6, 7) : 0), // 6. Грозы
-                (cape > 1200 && shear > 18 ? sat((cape/1200)*(shear/12), 0.5, 5) : 0), // 7. Суперячейки
-                (shear > 15 ? sat(shear + cape/1500, 0.4, 18) : 0), // 8. Шквал
-                (cape > 2000 && srh > 200 ? sat((cape/2000)*(srh/150), 0.8, 6) : 0) // 9. Торнадо
+                (rh > 80 ? (rh - 80) * 4.5 + (dpd < 1 ? 10 : 0) : 0),
+                (cape > 400 ? sat(cape/500 + rh/25, 0.5, 6) * convMult : 0),
+                (sat(cape/200 + rh/20, 0.4, 7) * (cape > 20 ? 1 : 0.1)),
+                (rh > 85 ? sat(rh - 85, 0.8, 4) : 0),
+                (rh > 95 && dpd < 0.5 ? sat(rh - 90, 1.2, 5) : 0),
+                (cape > 500 ? sat(cape/600 + Math.abs(li), 0.6, 7) : 0),
+                (cape > 1200 && shear > 18 ? sat((cape/1200)*(shear/12), 0.5, 5) : 0),
+                (shear > 15 ? sat(shear + cape/1500, 0.4, 18) : 0),
+                (cape > 2000 && srh > 200 ? sat((cape/2000)*(srh/150), 0.8, 6) : 0)
             ];
 
+            document.getElementById('lcl-val').innerText = lcl.toFixed(0);
+            document.getElementById('chill-val').innerText = chill.toFixed(1);
+
             res.forEach((v, i) => {
-                let finalVal = Math.min(100, Math.max(0, v));
-                if(i === 2 && cape === 0) finalVal = Math.min(finalVal, 5); // Фикс Кучевки
-                
-                document.getElementById('p'+(i+1)).innerText = finalVal.toFixed(1) + '%';
-                document.getElementById('b'+(i+1)).style.width = finalVal + '%';
+                let f = Math.min(100, Math.max(0, v));
+                if(i === 2 && cape === 0) f = Math.min(f, 5);
+                document.getElementById('p'+(i+1)).innerText = f.toFixed(1) + '%';
+                document.getElementById('b'+(i+1)).style.width = f + '%';
             });
         }
     </script>
