@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MDL | Login</title>
+    <title>MDL | Авторизация</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0a0a0c; --card: #1c1c1e; --accent: #0052ff; --error: #ff4545; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; height: 100vh; align-items: center; justify-content: center; margin: 0; }
-        .auth-card { background: var(--card); padding: 40px; border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); width: 320px; text-align: center; }
-        h2 { font-weight: 900; color: var(--accent); margin-bottom: 30px; }
+        .auth-card { background: var(--card); padding: 40px; border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); width: 320px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        h2 { font-weight: 900; color: var(--accent); margin-bottom: 30px; letter-spacing: -1px; }
         input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; text-align: center; outline: none; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        #error-msg { margin-top: 15px; color: var(--error); font-size: 13px; font-weight: 600; display: none; }
+        button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        #error-msg { margin-top: 20px; color: var(--error); font-size: 14px; font-weight: 600; display: none; }
     </style>
 </head>
 <body>
-
     <div class="auth-card">
-        <h2>MDL LOGIN</h2>
+        <h2>MDL CORE</h2>
         <input type="text" id="login" placeholder="Логин">
         <input type="password" id="pass" placeholder="Пароль">
         <button onclick="verify()">Войти</button>
@@ -30,19 +29,10 @@
             const uInput = document.getElementById('login').value.trim();
             const pInput = document.getElementById('pass').value.trim();
             const errorLabel = document.getElementById('error-msg');
-
             errorLabel.style.display = 'none';
 
             try {
-                // Добавляем timestamp, чтобы обойти кеш (304 Not Modified)
-                const cacheBuster = new Date().getTime();
-                const res = await fetch('db.json?v=' + cacheBuster);
-                
-                if (!res.ok) {
-                    // Если ты уже настроил 403, то fetch может упасть сюда
-                    throw new Error("Access Denied to DB");
-                }
-                
+                const res = await fetch('db.json?v=' + new Date().getTime());
                 const data = await res.json();
                 const user = data.vault.find(v => v.u === uInput && v.p === pInput);
 
@@ -53,12 +43,10 @@
                     errorLabel.style.display = 'block';
                 }
             } catch (err) {
-                console.error(err);
-                errorLabel.innerText = "Системная ошибка доступа";
+                errorLabel.innerText = "Ошибка базы данных";
                 errorLabel.style.display = 'block';
             }
         }
-
         document.addEventListener('keypress', (e) => { if(e.key === 'Enter') verify(); });
     </script>
 </body>
