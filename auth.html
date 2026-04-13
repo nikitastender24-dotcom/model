@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MDL | Авторизация</title>
+    <title>MDL | Security Gateway</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0a0a0c; --card: #1c1c1e; --accent: #0052ff; --error: #ff4545; }
@@ -17,10 +17,10 @@
 </head>
 <body>
     <div class="auth-card">
-        <h2>MDL CORE</h2>
+        <h2>MDL ACCESS</h2>
         <input type="text" id="login" placeholder="Логин">
         <input type="password" id="pass" placeholder="Пароль">
-        <button onclick="verify()">Войти</button>
+        <button onclick="verify()">Authorize</button>
         <div id="error-msg">Ошибка</div>
     </div>
 
@@ -37,7 +37,7 @@
                 const user = data.vault.find(v => v.u === uInput && v.p === pInput);
 
                 if (user) {
-                    localStorage.setItem('auth_key', 'GRANTED_v13');
+                    sessionStorage.setItem('auth_key', 'GRANTED_v13');
                     window.location.replace('index.html');
                 } else {
                     errorLabel.style.display = 'block';
