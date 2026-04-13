@@ -1,16 +1,33 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <style id="blocker">
+        html { display: none !important; background: #000 !important; }
+    </style>
+
     <script>
-        // Проверка сессии (если закрыл вкладку - нужно входить заново)
-        if (sessionStorage.getItem('auth_key') !== 'GRANTED_v13') {
-            window.location.replace('auth.html');
-        }
+        (function() {
+            if (sessionStorage.getItem('auth_key') !== 'GRANTED_v13') {
+                // Если сессии нет, немедленно перенаправляем и убиваем поток отрисовки
+                window.location.replace('auth.html');
+                document.write('');
+                window.stop();
+            } else {
+                // Если авторизован, убираем блокировку
+                document.documentElement.style.display = 'block';
+                document.addEventListener("DOMContentLoaded", function() {
+                    const styleTag = document.getElementById('blocker');
+                    if (styleTag) styleTag.remove();
+                });
+            }
+        })();
     </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MDL | Core v1.3 PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --bg: #f4f7f9;
@@ -49,7 +66,6 @@
             width: 42px; height: 42px; border-radius: 12px; background: var(--bar-bg);
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
         }
-        .icon-btn:hover { filter: brightness(1.1); }
         .icon-btn svg { width: 24px; height: 24px; fill: var(--text); }
 
         .exit-btn { font-size: 11px; font-weight: 800; color: #ff4545; cursor: pointer; text-transform: uppercase; border: 1px solid rgba(255,69,69,0.3); padding: 8px 14px; border-radius: 10px; background: rgba(255,69,69,0.05); }
@@ -75,31 +91,25 @@
         .input-group.full { grid-column: 1 / -1; }
         
         label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        input:focus { border-color: var(--accent); }
+        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; outline: none; }
         
         .execute-btn { 
             width: 100%; padding: 18px; border-radius: 14px; background: var(--accent-grad); color: #fff; 
             font-weight: 900; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase; 
             box-shadow: 0 10px 20px rgba(0, 82, 255, 0.3), inset 0 1px 1px rgba(255,255,255,0.4);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: 0.2s;
         }
-        .execute-btn:active { transform: scale(0.98); }
 
-        .results-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1100px) { .results-grid { grid-template-columns: 1fr 1fr; } }
-        
+        .converter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
         .metric { margin-bottom: 16px; }
         .m-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
-        .m-bar { height: 10px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .m-bar { height: 10px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; }
         .m-fill { height: 100%; width: 0%; background: var(--accent-grad); border-radius: 10px; transition: 1.2s cubic-bezier(0.2, 1, 0.2, 1); }
 
         .extra-panel { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; }
         .stat-val { display: block; font-size: 26px; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
         .stat-label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
-        
-        .converter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     </style>
 </head>
 <body>
@@ -108,7 +118,7 @@
         <div class="nav-logo">MDL CORE v1.3</div>
         <div class="nav-tools">
             <div class="exit-btn" onclick="exit()">Выход</div>
-            <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">
+            <button class="icon-btn" onclick="toggleTheme()">
                 <svg id="theme-icon" viewBox="0 0 24 24">
                     <path d="M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98,1.37-2.58,2.26-4.4,2.26 c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"/>
                 </svg>
@@ -137,12 +147,12 @@
             <div class="card">
                 <h3>Конвертеры</h3>
                 <div class="converter-section">
-                    <div class="input-group"><label>Скорость (м/с)</label><input type="number" id="ms" oninput="conv('ms')"></div>
-                    <div class="input-group"><label>Скорость (км/ч)</label><input type="number" id="kmh" oninput="conv('kmh')"></div>
-                    <div class="input-group"><label>Давление (hPa)</label><input type="number" id="hpa" oninput="conv('hpa')"></div>
-                    <div class="input-group"><label>Давление (мм рт.ст.)</label><input type="number" id="mmhg" oninput="conv('mmhg')"></div>
-                    <div class="input-group"><label>Темп. (°C)</label><input type="number" id="cels" oninput="conv('cels')"></div>
-                    <div class="input-group"><label>Темп. (°F)</label><input type="number" id="fahr" oninput="conv('fahr')"></div>
+                    <div class="input-group"><label>м/с</label><input type="number" id="ms" oninput="conv('ms')"></div>
+                    <div class="input-group"><label>км/ч</label><input type="number" id="kmh" oninput="conv('kmh')"></div>
+                    <div class="input-group"><label>hPa</label><input type="number" id="hpa" oninput="conv('hpa')"></div>
+                    <div class="input-group"><label>мм рт.ст.</label><input type="number" id="mmhg" oninput="conv('mmhg')"></div>
+                    <div class="input-group"><label>°C</label><input type="number" id="cels" oninput="conv('cels')"></div>
+                    <div class="input-group"><label>°F</label><input type="number" id="fahr" oninput="conv('fahr')"></div>
                 </div>
             </div>
         </div>
@@ -185,7 +195,6 @@
             icon.innerHTML = document.body.classList.contains('dark-theme') ? sunSVG : moonSVG;
         }
 
-        // Универсальный конвертер
         function conv(type) {
             const v = parseFloat(document.getElementById(type).value) || 0;
             if(type === 'ms') document.getElementById('kmh').value = (v * 3.6).toFixed(1);
@@ -196,11 +205,9 @@
             if(type === 'fahr') document.getElementById('cels').value = ((v - 32) * 5/9).toFixed(1);
         }
 
-        // Функция насыщения (сигмоида) для расчета вероятностей
         function sat(v, k=0.5, s=5) { return v <= 0 ? 0 : (1/(1+Math.exp(-k*(v-s))))*100; }
 
         function runMDL() {
-            // Сбор данных
             const t = parseFloat(document.getElementById('temp').value) || 0;
             const d = parseFloat(document.getElementById('dew').value) || 0;
             const w = parseFloat(document.getElementById('wind').value) || 0;
@@ -211,60 +218,34 @@
             const s = parseFloat(document.getElementById('shear').value) || 0;
             const srh = parseFloat(document.getElementById('srh').value) || 0;
 
-            // Расчет LCL (улучшенная формула)
             const lcl = Math.max(0, 125 * (t - d));
-            
-            // Расчет Wind Chill
             const chill = (t <= 10 && w >= 1.3) ? (13.12 + 0.6215*t - 11.37*Math.pow(w*3.6, 0.16) + 0.3965*t*Math.pow(w*3.6, 0.16)) : t;
             
-            // Шкала Бофорта
             let bft = 0;
             if (w >= 0.3) bft = 1; if (w >= 1.6) bft = 2; if (w >= 3.4) bft = 3; if (w >= 5.5) bft = 4;
             if (w >= 8.0) bft = 5; if (w >= 10.8) bft = 6; if (w >= 13.9) bft = 7; if (w >= 17.2) bft = 8;
             if (w >= 20.8) bft = 9; if (w >= 24.5) bft = 10; if (w >= 28.5) bft = 11; if (w >= 32.7) bft = 12;
 
-            // Обновленная прогностическая модель с учетом синергии
             const res = [
-                // 1. Общие осадки (зависит от RH и сближения T/Td)
                 (rh > 75 ? (rh - 75) * 4 + (dpd < 2 ? 15 : 0) : 0),
-                
-                // 2. Ливневые осадки (Нужна энергия CAPE и влага)
                 (c > 150 && rh > 65 ? sat(c/400 + rh/30, 0.6, 6) : 0),
-                
-                // 3. Кучевая (Cu) - термики
                 (sat(c/200 + t/15, 0.5, 5) + (lcl > 500 && lcl < 2000 ? 30 : 0)),
-                
-                // 4. Слоистая (St) - высокая влажность, малый градиент
                 (rh > 85 && dpd < 3 ? sat(rh - 80, 0.8, 5) : 0),
-                
-                // 5. Туман - почти 100% влажность, штиль, DPD около нуля
                 (rh > 95 && dpd < 1 && w < 4 ? sat(rh - 90, 1.5, 4) + (3 - w)*10 : 0),
-                
-                // 6. Грозы - Энергия и индекс нестаблиьности
                 (c > 400 && li < 0 ? sat(c/500 + Math.abs(li)/2, 0.6, 5) : 0),
-                
-                // 7. Суперячейки - Мощный CAPE + Сдвиг + SRH
                 (c > 1000 && s > 15 && srh > 100 ? sat((c/1500) * (s/15) * (srh/100), 0.7, 4) : 0),
-                
-                // 8. Шквал - Сильный ветер, энергия и СУХОЙ воздух на высоте (DCAPE proxy через DPD)
                 (c > 500 && (w > 10 || s > 15) ? sat((c/1000) * (s/12) * (dpd > 8 ? 1.5 : 1), 0.6, 5) : 0),
-                
-                // 9. Торнадо-индекс - Низкая база облаков, сильное вращение (SRH) и сдвиг
                 (c > 800 && srh > 150 && lcl < 1500 ? sat((srh/150) * (s/20) * (2000/(lcl+100)), 0.8, 3) : 0)
             ];
 
-            // Вывод данных
             document.getElementById('lcl-val').innerText = lcl.toFixed(0);
             document.getElementById('chill-val').innerText = chill.toFixed(1);
             document.getElementById('beaufort-val').innerText = bft;
 
-            // Анимация баров
             res.forEach((v, i) => {
                 let f = Math.min(100, Math.max(0, v));
                 document.getElementById('p'+(i+1)).innerText = f.toFixed(1) + '%';
                 document.getElementById('b'+(i+1)).style.width = f + '%';
-                
-                // Цветовое кодирование опасных явлений (краснеет при высоких значениях)
                 const bar = document.getElementById('b'+(i+1));
                 if (i >= 5 && f > 50) bar.style.background = 'linear-gradient(180deg, #ff4545 0%, #d00000 100%)';
                 else bar.style.background = 'var(--accent-grad)';
