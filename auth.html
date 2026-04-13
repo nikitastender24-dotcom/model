@@ -2,24 +2,129 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>MDL | Security</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDL | Security Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #0a0a0c; color: white; font-family: sans-serif; display: flex; height: 100vh; align-items: center; justify-content: center; margin: 0; }
-        .login-card { background: #1a1a1c; padding: 40px; border-radius: 24px; border: 1px solid #2c2c2e; text-align: center; width: 300px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: #252527; color: white; text-align: center; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #0052ff; color: white; font-weight: bold; cursor: pointer; }
+        :root {
+            --bg: #0a0a0c;
+            --card: #1c1c1e;
+            --accent: #0052ff;
+            --error: #ff4545;
+            --text: #ffffff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .auth-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: -1px;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        /* Текст ошибки снизу */
+        #error-msg {
+            margin-top: 20px;
+            color: var(--error);
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 18px; /* Чтобы карточка не прыгала */
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        #error-msg.visible {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
-    <div class="login-card">
+
+    <div class="auth-card">
         <h2>MDL ACCESS</h2>
-        <input type="text" id="login" placeholder="User">
-        <input type="password" id="pass" placeholder="Password">
-        <button onclick="verify()">Verify</button>
+        
+        <div class="input-group">
+            <input type="text" id="login" placeholder="Логин" autocomplete="off">
+        </div>
+        
+        <div class="input-group">
+            <input type="password" id="pass" placeholder="Пароль">
+        </div>
+
+        <button onclick="verify()">Войти</button>
+
+        <div id="error-msg">Ошибка</div>
     </div>
 
     <script>
-        // Функция превращения текста в нечитаемый хэш
+        // Функция хэширования SHA-256
         async function hash(string) {
             const utf8 = new TextEncoder().encode(string);
             const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
@@ -28,21 +133,47 @@
         }
 
         async function verify() {
-            const userH = await hash(document.getElementById('login').value);
-            const passH = await hash(document.getElementById('pass').value);
+            const loginBox = document.getElementById('login');
+            const passBox = document.getElementById('pass');
+            const errorLabel = document.getElementById('error-msg');
 
-            const res = await fetch('db.json');
-            const data = await res.json();
+            // Скрываем прошлую ошибку
+            errorLabel.classList.remove('visible');
 
-            const match = data.vault.find(v => v.u === userH && v.p === passH);
+            const userH = await hash(loginBox.value.trim());
+            const passH = await hash(passBox.value.trim());
 
-            if (match) {
-                localStorage.setItem('auth_key', 'GRANTED_v13');
-                window.location.href = 'index.html';
-            } else {
-                alert('Access Denied');
+            try {
+                // Загружаем нашу "базу"
+                const res = await fetch('db.json');
+                if (!res.ok) throw new Error();
+                
+                const data = await res.json();
+
+                // Ищем совпадение
+                const match = data.vault.find(v => v.u === userH && v.p === passH);
+
+                if (match) {
+                    // Успех
+                    localStorage.setItem('auth_key', 'GRANTED_v13');
+                    window.location.replace('index.html');
+                } else {
+                    // Показываем красную надпись снизу
+                    errorLabel.classList.add('visible');
+                }
+            } catch (err) {
+                console.error("Database error:", err);
+                errorLabel.innerText = "Ошибка базы данных";
+                errorLabel.classList.add('visible');
             }
         }
+
+        // Позволяет входить по нажатию Enter
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                verify();
+            }
+        });
     </script>
 </body>
 </html>
