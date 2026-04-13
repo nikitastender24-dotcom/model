@@ -2,34 +2,139 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MDL | Security Gateway</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0a0a0c; --card: #1c1c1e; --accent: #0052ff; --error: #ff4545; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; height: 100vh; align-items: center; justify-content: center; margin: 0; }
-        .auth-card { background: var(--card); padding: 40px; border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); width: 320px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        h2 { font-weight: 900; color: var(--accent); margin-bottom: 30px; letter-spacing: -1px; }
-        input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; text-align: center; outline: none; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        #error-msg { margin-top: 20px; color: var(--error); font-size: 14px; font-weight: 600; display: none; }
+        :root { 
+            --bg: #0a0a0c; 
+            --card: #1c1c1e; 
+            --accent: #0052ff; 
+            --error: #ff4545; 
+            --input-bg: rgba(255, 255, 255, 0.05);
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0; 
+            padding: 20px;
+        }
+
+        .auth-card { 
+            background: var(--card); 
+            padding: 40px; 
+            border-radius: 32px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            width: 100%;
+            max-width: 360px; 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+
+        h2 { 
+            font-weight: 900; 
+            color: var(--accent); 
+            margin-bottom: 30px; 
+            letter-spacing: -1px; 
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .input-box { margin-bottom: 12px; }
+
+        input { 
+            width: 100%; 
+            height: 54px;
+            padding: 0 20px; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: var(--input-bg); 
+            color: white; 
+            text-align: center; 
+            outline: none; 
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        input:focus { border-color: var(--accent); background: rgba(0, 82, 255, 0.05); }
+
+        button { 
+            width: 100%; 
+            height: 56px;
+            margin-top: 10px;
+            border-radius: 16px; 
+            border: none; 
+            background: var(--accent); 
+            color: white; 
+            font-weight: 900; 
+            font-size: 14px;
+            cursor: pointer; 
+            transition: 0.2s; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        button:active { transform: scale(0.97); opacity: 0.9; }
+
+        #error-msg { 
+            margin-top: 20px; 
+            color: var(--error); 
+            font-size: 13px; 
+            font-weight: 700; 
+            display: none; 
+            background: rgba(255, 69, 69, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* Адаптация для мобильных устройств */
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 20px; border-radius: 24px; }
+            h2 { font-size: 20px; margin-bottom: 25px; }
+            input { height: 50px; font-size: 15px; }
+            button { height: 52px; }
+        }
     </style>
 </head>
 <body>
     <div class="auth-card">
         <h2>MDL ACCESS</h2>
-        <input type="text" id="login" placeholder="Логин">
-        <input type="password" id="pass" placeholder="Пароль">
-        <button onclick="verify()">Authorize</button>
-        <div id="error-msg">Ошибка</div>
+        <div class="input-box"><input type="text" id="login" placeholder="Логин" autocomplete="off"></div>
+        <div class="input-box"><input type="password" id="pass" placeholder="Пароль"></div>
+        <button onclick="verify()">Авторизация</button>
+        <div id="error-msg">Неверные данные</div>
     </div>
 
     <script>
+        // Функция определения типа устройства
+        function getDeviceType() {
+            const ua = navigator.userAgent;
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
+            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) return "Mobile";
+            return "Desktop";
+        }
+
         async function verify() {
             const uInput = document.getElementById('login').value.trim();
             const pInput = document.getElementById('pass').value.trim();
             const errorLabel = document.getElementById('error-msg');
+            
             errorLabel.style.display = 'none';
+
+            if (!uInput || !pInput) {
+                errorLabel.innerText = "Заполните все поля";
+                errorLabel.style.display = 'block';
+                return;
+            }
 
             try {
                 const res = await fetch('db.json?v=' + new Date().getTime());
@@ -37,17 +142,25 @@
                 const user = data.vault.find(v => v.u === uInput && v.p === pInput);
 
                 if (user) {
+                    // Сохраняем токен и тип устройства
                     sessionStorage.setItem('auth_key', 'GRANTED_v13');
+                    sessionStorage.setItem('device_info', getDeviceType());
+                    
                     window.location.replace('index.html');
                 } else {
+                    errorLabel.innerText = "Доступ отклонен";
                     errorLabel.style.display = 'block';
                 }
             } catch (err) {
-                errorLabel.innerText = "Ошибка базы данных";
+                errorLabel.innerText = "Ошибка сервера БД";
                 errorLabel.style.display = 'block';
             }
         }
-        document.addEventListener('keypress', (e) => { if(e.key === 'Enter') verify(); });
+
+        // Вход по нажатию Enter
+        document.addEventListener('keypress', (e) => { 
+            if(e.key === 'Enter') verify(); 
+        });
     </script>
 </body>
 </html>
